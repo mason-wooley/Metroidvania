@@ -17,14 +17,26 @@ public class OrbitCamera : MonoBehaviour
 
     Vector3 focusPoint;
 
+    Quaternion gravityAlignment = Quaternion.identity;
+
+    Quaternion orbitRotation;
+
+    // Will only rotate along the Y and Z axes
+    Vector2 orbitAngles = new Vector3(0f, 0f, 0f);
+
     void Awake () {
-        focusPoint = focus.position;    
+        focusPoint = focus.position;
+        transform.localRotation = orbitRotation = Quaternion.Euler(orbitAngles);
     }
 
     void LateUpdate () {
+        gravityAlignment = Quaternion.FromToRotation(gravityAlignment * Vector3.up, -Physics.gravity.normalized) * gravityAlignment;
         UpdateFocusPoint();
-        Vector3 lookDirection = transform.forward;
-        transform.localPosition = focusPoint - lookDirection * distance;
+        orbitRotation = Quaternion.Euler(orbitAngles);
+        Quaternion lookRotation = gravityAlignment * orbitRotation;
+        Vector3 lookDirection = lookRotation * Vector3.forward;
+        Vector3 lookPosition = focusPoint - lookDirection * distance;
+        transform.SetPositionAndRotation(lookPosition, lookRotation);
     }
 
     void UpdateFocusPoint () {

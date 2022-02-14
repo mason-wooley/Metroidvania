@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour {
 
     Vector3 upAxis, rightAxis;
 
+
     void OnValidate() {
         minGroundDotProduct = Mathf.Cos(maxGroundAngle * Mathf.Deg2Rad);
         minStairsDotProduct = Mathf.Cos(maxStairsAngle * Mathf.Deg2Rad);
@@ -169,6 +170,10 @@ public class PlayerMovement : MonoBehaviour {
         } else {
             contactNormal = upAxis;
         }
+
+        // Rotate player to match upAxis
+        // TODO: Movement code breaks when gravity direction changes
+        // transform.rotation = Quaternion.Euler(new Vector3(Mathf.Asin(upAxis.x) * Mathf.Rad2Deg, Mathf.Acos(upAxis.y) * Mathf.Rad2Deg, 0f));
     }
 
     void ClearState() {
