@@ -76,7 +76,7 @@ public class PlayerMovement : MonoBehaviour {
         // Used in next FixedUpdate call to control velocity
         desiredVelocity = new Vector3(moveDirection.x, 0f, 0f) * maxVelocity;
 
-        jumpRequest |= jump.ReadValue<float>() > 0f;
+        jumpRequest |= jump.WasPressedThisFrame();
     }
 
     void FixedUpdate() {
