@@ -1,6 +1,12 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour {
+
+    public PlayerInputActions playerControls;
+    private InputAction move;
+    private InputAction jump;
+
     // Serialized fields
     [Range(0f, 100f)] public float maxVelocity = 10f;
     [Range(0f, 100f)] public float maxAcceleration = 10f, maxAirAcceleration = 1f;
@@ -15,6 +21,7 @@ public class PlayerMovement : MonoBehaviour {
     Transform playerInputSpace = default;
 
     private bool jumpRequest;
+    private bool crouching;
     private int groundContactCount, steepContactCount;
     private int jumpPhase;
     private int stepsSinceLastGrounded, stepsSinceLastJump;
@@ -31,6 +38,18 @@ public class PlayerMovement : MonoBehaviour {
 
     Vector3 upAxis, rightAxis;
 
+    void OnEnable () {
+        move = playerControls.Player.Movement;
+        move.Enable();
+
+        jump = playerControls.Player.Jump;
+        jump.Enable();
+    }
+
+    void OnDisable () {
+        move.Disable();
+        jump.Disable();
+    }
 
     void OnValidate() {
         minGroundDotProduct = Mathf.Cos(maxGroundAngle * Mathf.Deg2Rad);
@@ -38,14 +57,15 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     private void Awake() {
+        playerControls = new PlayerInputActions();
         body = GetComponent<Rigidbody>();
         OnValidate();
     }
 
     void Update() {
         // Get inputs
-        float xInput = Input.GetAxis("Horizontal");
-
+        Vector2 moveDirection = move.ReadValue<Vector2>();
+        
         if (playerInputSpace) {
             rightAxis = ProjectDirectionOnPlane(playerInputSpace.right, upAxis);
 
@@ -54,9 +74,9 @@ public class PlayerMovement : MonoBehaviour {
         }
         
         // Used in next FixedUpdate call to control velocity
-        desiredVelocity = new Vector3(xInput, 0f, 0f) * maxVelocity;
-        
-        jumpRequest |= Input.GetButtonDown("Jump");
+        desiredVelocity = new Vector3(moveDirection.x, 0f, 0f) * maxVelocity;
+
+        jumpRequest |= jump.ReadValue<float>() > 0f;
     }
 
     void FixedUpdate() {
