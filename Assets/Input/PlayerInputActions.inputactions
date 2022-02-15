@@ -48,7 +48,7 @@
                 {
                     "name": "",
                     "id": "757b2687-21a6-41db-bc70-58f67b4ef43e",
-                    "path": "<SwitchProControllerHID>/buttonSouth",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -114,7 +114,7 @@
                 {
                     "name": "2D Vector",
                     "id": "86ea0665-d1e7-4a2a-9ce3-50ca558cd3d5",
-                    "path": "2DVector",
+                    "path": "2DVector(mode=2)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -125,7 +125,7 @@
                 {
                     "name": "up",
                     "id": "f489a6a5-a098-4de3-a75c-bd5308e09c60",
-                    "path": "<SwitchProControllerHID>/dpad/up",
+                    "path": "<Gamepad>/leftStick/up",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -136,7 +136,7 @@
                 {
                     "name": "down",
                     "id": "d1ae5e08-801d-4d6a-a7f3-a4cd82d8b3e2",
-                    "path": "<SwitchProControllerHID>/dpad/down",
+                    "path": "<Gamepad>/leftStick/down",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -147,7 +147,7 @@
                 {
                     "name": "left",
                     "id": "7023d17b-f546-4ae3-bc45-0495b1eaf15b",
-                    "path": "<SwitchProControllerHID>/dpad/left",
+                    "path": "<Gamepad>/leftStick/left",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -158,7 +158,7 @@
                 {
                     "name": "right",
                     "id": "feed7af4-e85d-42d1-aac4-f5f0c8ddd7b4",
-                    "path": "<SwitchProControllerHID>/dpad/right",
+                    "path": "<Gamepad>/leftStick/right",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -173,6 +173,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard and Mouse",
+                    "action": "Guard",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "11529bfa-19d1-41e1-be31-ceb67c985c4b",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
                     "action": "Guard",
                     "isComposite": false,
                     "isPartOfComposite": false
