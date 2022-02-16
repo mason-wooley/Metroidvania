@@ -1,24 +1,76 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+
+enum PlayerState {
+    IDLE,
+    RUN,
+    JUMP,
+    AIR,
+    GUARD,
+    SLIDE,
+    ROLL
+}
 
 public class PlayerMovement : MonoBehaviour {
-
-    public PlayerInputActions playerControls;
-    private InputAction move;
-    private InputAction jump;
-
-    // Serialized fields
-    [Range(0f, 100f)] public float maxVelocity = 10f;
-    [Range(0f, 100f)] public float maxAcceleration = 10f, maxAirAcceleration = 1f;
-    [Range(0f, 10f)] public float jumpHeight = 2f;
-    [Range(0, 10)] public int maxAirJumps = 0;
-    [Range(0f, 90f)] public float maxGroundAngle = 25f, maxStairsAngle = 50f;
-    [Range(0f, 100f)] public float maxSnapSpeed = 100f;
-    [Min(0f)] public float probeDistance = 2f;
-    public LayerMask probeMask = -1, stairsMask = -1;
+    // Input object
+    [SerializeField]
+    PlayerInputActions playerControls;
 
     [SerializeField]
+    Text playerStateText;
+
+    [SerializeField]
+    Text groundStateText;
+
+    // Move speed settings
+    [SerializeField, Range(0f, 100f)]
+    float maxVelocity = 10f;
+    
+    [SerializeField, Range(0f, 100f)]
+    float maxAcceleration = 10f, maxAirAcceleration = 1f;
+    
+    // Jump settings
+    [SerializeField, Range(0f, 10f)]
+    float jumpHeight = 2f;
+    
+    [SerializeField, Range(0, 10)]
+    int maxAirJumps = 0;
+
+    [SerializeField, Range(0f, 10f)]
+    float guardDuration = 5f;
+
+    [SerializeField, Range(0f, 10f)]
+    float slideDuration = 2f;
+
+    [SerializeField, Range(0f, 10f)]
+    float rollDuration = 2f;
+
+    // Sloped platform settings
+    [SerializeField, Range(0f, 90f)]
+    float maxGroundAngle = 25f, maxStairsAngle = 50f;
+    
+    [SerializeField, Range(0f, 100f)]
+    float maxSnapSpeed = 100f;
+    
+    [SerializeField, Min(0f)]
+    float probeDistance = 2f;
+    
+    [SerializeField]
+    LayerMask probeMask = -1, stairsMask = -1;
+
+    // Alternate movement axis settings
+    [SerializeField]
     Transform playerInputSpace = default;
+
+    // TODO: Make some sort of separate class for this, could get 
+    private InputAction move;
+    private InputAction jump;
+    private InputAction guard;
+
+    private PlayerState state;
+
 
     private bool jumpRequest;
     private bool crouching;
@@ -29,6 +81,8 @@ public class PlayerMovement : MonoBehaviour {
     private bool OnGround => groundContactCount > 0;
 
     private bool OnSteep => steepContactCount > 0;
+
+    private bool GuardPressed => guard.ReadValue<float>() > 0f;
 
     // Physics vars
     private Rigidbody body;
@@ -44,6 +98,9 @@ public class PlayerMovement : MonoBehaviour {
 
         jump = playerControls.Player.Jump;
         jump.Enable();
+
+        guard = playerControls.Player.Guard;
+        guard.Enable();
     }
 
     void OnDisable () {
@@ -65,18 +122,52 @@ public class PlayerMovement : MonoBehaviour {
     void Update() {
         // Get inputs
         Vector2 moveDirection = move.ReadValue<Vector2>();
-        
+
         if (playerInputSpace) {
             rightAxis = ProjectDirectionOnPlane(playerInputSpace.right, upAxis);
-
         } else {
             rightAxis = ProjectDirectionOnPlane(Vector3.right, upAxis);
         }
-        
+
         // Used in next FixedUpdate call to control velocity
         desiredVelocity = new Vector3(moveDirection.x, 0f, 0f) * maxVelocity;
 
+        if (desiredVelocity.magnitude > 0.001f) {
+            if (OnGround && state == PlayerState.IDLE) {
+                state = PlayerState.RUN;
+            } else if (OnGround && state == PlayerState.GUARD) {
+                state = PlayerState.ROLL;
+                Roll();
+            } else if (OnGround && state == PlayerState.JUMP) {
+                state = PlayerState.RUN;
+            }
+        } else if (desiredVelocity.magnitude < 0.001f && OnGround) {
+            state = PlayerState.IDLE;
+        }
+
+        if (GuardPressed) {
+            if (state == PlayerState.RUN) {
+                state = PlayerState.SLIDE;
+                Slide();
+            } else if (state == PlayerState.IDLE) {
+                state = PlayerState.GUARD;
+                Guard();
+            }
+        }
+
         jumpRequest |= jump.WasPressedThisFrame();
+
+        if (jumpRequest || !OnGround) {
+            state = PlayerState.JUMP;
+        }
+
+        playerStateText.text = "PlayerState: " + state.ToString();
+
+        if (OnGround) {
+            groundStateText.text = "Grounded: True";
+        } else {
+            groundStateText.text = "Grounded: False";
+        }
     }
 
     void FixedUpdate() {
@@ -88,6 +179,7 @@ public class PlayerMovement : MonoBehaviour {
         // Jump command
         if (jumpRequest) {
             jumpRequest = false;
+            state = PlayerState.JUMP;
             Jump();
         }
 
@@ -132,6 +224,30 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         velocity += jumpDirection * jumpSpeed;
+    }
+
+    void Slide () {
+        // TODO: Modify hitbox
+        transform.rotation = Quaternion.Euler(new Vector3(270, 90));
+        Invoke("EndSlide", slideDuration);
+    }
+
+    void EndSlide () {
+        transform.rotation = Quaternion.Euler(new Vector3(0, 90));
+    }
+
+    void Roll () {
+        // TODO: Modify hitbox
+        transform.rotation = Quaternion.Euler(new Vector3(0, 90, 270));
+        Invoke("EndRoll", rollDuration);
+    }
+
+    void EndRoll () {
+        transform.rotation = Quaternion.Euler(new Vector3(0, 90, 0));
+    }
+
+    void Guard () {
+        Debug.Log("I should be guarding!");
     }
 
     bool SnapToGround () {
