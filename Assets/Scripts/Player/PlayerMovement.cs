@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-enum PlayerState {
+enum PlayerStateEnum {
     IDLE,
     RUN,
     JUMP,
@@ -69,7 +69,7 @@ public class PlayerMovement : MonoBehaviour {
     private InputAction jump;
     private InputAction guard;
 
-    private PlayerState state;
+    private PlayerStateEnum state;
 
 
     private bool jumpRequest;
@@ -133,24 +133,24 @@ public class PlayerMovement : MonoBehaviour {
         desiredVelocity = new Vector3(moveDirection.x, 0f, 0f) * maxVelocity;
 
         if (desiredVelocity.magnitude > 0.001f) {
-            if (OnGround && state == PlayerState.IDLE) {
-                state = PlayerState.RUN;
-            } else if (OnGround && state == PlayerState.GUARD) {
-                state = PlayerState.ROLL;
+            if (OnGround && state == PlayerStateEnum.IDLE) {
+                state = PlayerStateEnum.RUN;
+            } else if (OnGround && state == PlayerStateEnum.GUARD) {
+                state = PlayerStateEnum.ROLL;
                 Roll();
-            } else if (OnGround && state == PlayerState.JUMP) {
-                state = PlayerState.RUN;
+            } else if (OnGround && state == PlayerStateEnum.JUMP) {
+                state = PlayerStateEnum.RUN;
             }
         } else if (desiredVelocity.magnitude < 0.001f && OnGround) {
-            state = PlayerState.IDLE;
+            state = PlayerStateEnum.IDLE;
         }
 
         if (GuardPressed) {
-            if (state == PlayerState.RUN) {
-                state = PlayerState.SLIDE;
+            if (state == PlayerStateEnum.RUN) {
+                state = PlayerStateEnum.SLIDE;
                 Slide();
-            } else if (state == PlayerState.IDLE) {
-                state = PlayerState.GUARD;
+            } else if (state == PlayerStateEnum.IDLE) {
+                state = PlayerStateEnum.GUARD;
                 Guard();
             }
         }
@@ -158,7 +158,7 @@ public class PlayerMovement : MonoBehaviour {
         jumpRequest |= jump.WasPressedThisFrame();
 
         if (jumpRequest || !OnGround) {
-            state = PlayerState.JUMP;
+            state = PlayerStateEnum.JUMP;
         }
 
         playerStateText.text = "PlayerState: " + state.ToString();
@@ -179,7 +179,7 @@ public class PlayerMovement : MonoBehaviour {
         // Jump command
         if (jumpRequest) {
             jumpRequest = false;
-            state = PlayerState.JUMP;
+            state = PlayerStateEnum.JUMP;
             Jump();
         }
 
