@@ -22,9 +22,7 @@ public class PlayerGroundedState : PlayerState {
     }
 
     public override void LogicUpdate() {
-        base.LogicUpdate();
-        
-        moveInput = player.InputHandler.MoveInput;
+        moveInput = player.Input.Movement;
     }
 
     public override void PhysicsUpdate() {

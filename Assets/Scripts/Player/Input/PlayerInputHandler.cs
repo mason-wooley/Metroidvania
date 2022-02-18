@@ -4,7 +4,22 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour, PlayerInputActions.IPlayerActions {
-    public Vector2 MoveInput { get; private set; }
+    public Vector2 Movement { get; private set; }
+
+    private PlayerInputActions inputActions;
+
+    private void Awake() {
+        inputActions = new PlayerInputActions();
+        inputActions.Player.SetCallbacks(this);    
+    }
+
+    private void OnEnable() {
+        inputActions.Enable();
+    }
+
+    private void OnDisable() {
+        inputActions.Disable();
+    }
 
     public void OnGuard(InputAction.CallbackContext context) {
         Debug.Log("Implement Guard!");
@@ -16,6 +31,6 @@ public class PlayerInputHandler : MonoBehaviour, PlayerInputActions.IPlayerActio
 
     public void OnMovement(InputAction.CallbackContext context) {
         Debug.Log(context);
-        MoveInput = context.ReadValue<Vector2>();    
+        Movement = context.ReadValue<Vector2>();    
     }
 }
