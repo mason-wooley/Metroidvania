@@ -41,4 +41,8 @@ public class PlayerState {
     public virtual void DoChecks () {
 
     }
+
+    public Vector3 ProjectDirectionOnPlane(Vector3 direction, Vector3 normal) {
+        return (direction - normal * Vector3.Dot(direction, normal)).normalized;
+    }
 }

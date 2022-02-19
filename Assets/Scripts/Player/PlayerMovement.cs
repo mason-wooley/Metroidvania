@@ -132,42 +132,7 @@ public class PlayerMovement : MonoBehaviour {
         // Used in next FixedUpdate call to control velocity
         desiredVelocity = new Vector3(moveDirection.x, 0f, 0f) * maxVelocity;
 
-        if (desiredVelocity.magnitude > 0.001f) {
-            if (OnGround && state == PlayerStateEnum.IDLE) {
-                state = PlayerStateEnum.RUN;
-            } else if (OnGround && state == PlayerStateEnum.GUARD) {
-                state = PlayerStateEnum.ROLL;
-                Roll();
-            } else if (OnGround && state == PlayerStateEnum.JUMP) {
-                state = PlayerStateEnum.RUN;
-            }
-        } else if (desiredVelocity.magnitude < 0.001f && OnGround) {
-            state = PlayerStateEnum.IDLE;
-        }
-
-        if (GuardPressed) {
-            if (state == PlayerStateEnum.RUN) {
-                state = PlayerStateEnum.SLIDE;
-                Slide();
-            } else if (state == PlayerStateEnum.IDLE) {
-                state = PlayerStateEnum.GUARD;
-                Guard();
-            }
-        }
-
         jumpRequest |= jump.WasPressedThisFrame();
-
-        if (jumpRequest || !OnGround) {
-            state = PlayerStateEnum.JUMP;
-        }
-
-        playerStateText.text = "PlayerState: " + state.ToString();
-
-        if (OnGround) {
-            groundStateText.text = "Grounded: True";
-        } else {
-            groundStateText.text = "Grounded: False";
-        }
     }
 
     void FixedUpdate() {

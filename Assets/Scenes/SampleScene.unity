@@ -4125,7 +4125,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474867ee0ff2fe24ea1478ab2cd5029c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerData: {fileID: 0}
+  playerData: {fileID: 11400000, guid: 2e06a921d53a3f84aac2dfc6365baaaf, type: 2}
+  body: {fileID: 0}
+  velocity: {x: 0, y: 0, z: 0}
+  desiredVelocity: {x: 0, y: 0, z: 0}
 --- !u!96 &1330331509
 TrailRenderer:
   serializedVersion: 2

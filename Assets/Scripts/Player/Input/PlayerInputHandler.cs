@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour, PlayerInputActions.IPlayerActions {
     public Vector2 Movement { get; private set; }
+    public float Guard { get; private set; }
+    public float Jump { get; private set; }
 
     private PlayerInputActions inputActions;
 
@@ -22,15 +24,14 @@ public class PlayerInputHandler : MonoBehaviour, PlayerInputActions.IPlayerActio
     }
 
     public void OnGuard(InputAction.CallbackContext context) {
-        Debug.Log("Implement Guard!");
+        Guard = context.ReadValue<float>();    
     }
 
     public void OnJump(InputAction.CallbackContext context) {
-        Debug.Log("Implement Jump!");
+        Jump = context.ReadValue<float>();
     }
 
     public void OnMovement(InputAction.CallbackContext context) {
-        Debug.Log(context);
         Movement = context.ReadValue<Vector2>();    
     }
 }
